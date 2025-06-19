@@ -233,17 +233,26 @@
 
             while (!maze.AllCellsVisited())
             {
-                // find a random unvisited cell to start the next random walk at
+                // find an unvisited cell to start the next random walk at
                 bool nextUnvisitedCellFound = false;
+                int i = 0;
+                int j = 0;
                 while (!nextUnvisitedCellFound)
                 {
-                    int i = r.Next(0, width);
-                    int j = r.Next(0, height);
                     if (!maze.CellVisited(i, j))
                     {
                         nextUnvisitedCellFound = true;
                         Coordinate nextUnvisitedCell = new Coordinate(i, j);
                         RandomWalk.Add(nextUnvisitedCell);
+                    }
+                    else
+                    {
+                        i++;
+                        if (i == width)
+                        {
+                            i = 0;
+                            j++;
+                        }
                     }
                 }
                 // perform a random walk until a visited cell is reached
@@ -334,7 +343,7 @@
     {
         static void Main()
         {
-            RDFSTest(15, 10);
+            WilsonTest(10, 10);
         }
 
         // misc tests
