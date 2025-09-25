@@ -12,7 +12,9 @@
         public void PlayGame()
         {
             Console.WriteLine("Welcome to my maze game.");
+            Console.WriteLine("Use WASD or arrow keys to move.");
             Console.WriteLine("You will start in the bottom left corner of the maze and attempt to reach the top right corner.");
+            Console.WriteLine();
             MazeGraph maze = GenerateMaze();
             DisplayMaze(maze);
             PlayMaze(maze);
@@ -189,9 +191,11 @@
             TimeSpan timeTaken = endTime - startTime;
             int timeMinutes = (int)Math.Floor(timeTaken.TotalMinutes);
             double timeSeconds = (Math.Floor(timeTaken.TotalMilliseconds) / 1000) % 60;
+            int score = (int)Math.Floor(10 * maze.GetWidth() * maze.GetHeight() / timeTaken.TotalSeconds);
 
             Console.Clear();
             Console.WriteLine($"Congratulations! You cleared a {maze.GetWidth()}x{maze.GetHeight()} maze in {timeMinutes} minute(s) and {timeSeconds} seconds.");
+            Console.WriteLine($"Based on the width, height and time taken, you earned a score of {score}.");
             Thread.Sleep(1000);
         }
     }
