@@ -113,6 +113,7 @@
         public void DisplayMaze(MazeGraph maze)
         {
             Console.Clear();
+            Console.SetWindowSize(4 * maze.GetWidth() + 2, Math.Min(2 * maze.GetHeight() + 1, 60));
             char[,] display = maze.ReturnDisplayableMaze();
             for (int j = 0; j < display.GetLength(1); j++)
             {
@@ -189,9 +190,11 @@
             TimeSpan timeTaken = endTime - startTime;
             int timeMinutes = (int)Math.Floor(timeTaken.TotalMinutes);
             double timeSeconds = (Math.Floor(timeTaken.TotalMilliseconds) / 1000) % 60;
+            int score = (int)Math.Floor(10 * maze.GetHeight() * maze.GetWidth() / timeTaken.TotalSeconds);
 
             Console.Clear();
             Console.WriteLine($"Congratulations! You cleared a {maze.GetWidth()}x{maze.GetHeight()} maze in {timeMinutes} minute(s) and {timeSeconds} seconds.");
+            Console.WriteLine($"Score: {score} (this is calculated based on the size and time taken)");
             Thread.Sleep(1000);
         }
     }
