@@ -1,6 +1,6 @@
 ﻿namespace maze_generator
 {
-    // Specialised graph which represents a rectangular grid, with an array of nodes and 2 arrays of horizontal/vertical edges between them
+    // Specialised graph where the nodes represent a rectangular grid, with an array of nodes and 2 arrays of horizontal/vertical edges between them
     class MazeGraph
     {
         // attributes

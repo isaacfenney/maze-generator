@@ -8,7 +8,7 @@
             g.PlayGame();
         }
 
-        // misc tests
+        // misc, will probably end up being unused
         static void RDFSTest(int width, int height)
         {
             MazeGenerator g = new MazeGenerator();
@@ -51,7 +51,6 @@
                 Console.WriteLine();
             }
         }
-
         static void MazeGenTimingTest()
         {
             MazeGenerator g = new MazeGenerator();

@@ -3,6 +3,7 @@
     class Game
     {
         private MazeGenerator g;
+        private PlayerStats p = new PlayerStats();
 
         public Game()
         {
@@ -12,12 +13,36 @@
         public void PlayGame()
         {
             Console.WriteLine("Welcome to my maze game.");
-            Console.WriteLine("Use WASD or arrow keys to move.");
+            Console.WriteLine("Use WASD or the arrow keys to move.");
             Console.WriteLine("You will start in the bottom left corner of the maze and attempt to reach the top right corner.");
             Console.WriteLine();
-            MazeGraph maze = GenerateMaze();
-            DisplayMaze(maze);
-            PlayMaze(maze);
+            int menuChoice = -1;
+            while (menuChoice != 3)
+            {
+                Console.WriteLine("What would you like to do?" + "\n" +
+                    "1. Play" + "\n" +
+                    "2. View statistics" + "\n" +
+                    "3. Quit");
+                try
+                {
+                    menuChoice = Convert.ToInt32(Console.ReadLine());
+                    switch (menuChoice)
+                    {
+                        case 1:
+                            MazeGraph maze = GenerateMaze();
+                            DisplayMaze(maze);
+                            PlayMaze(maze);
+                            break;
+                        case 2:
+                            Console.WriteLine("Not implemented yet");
+                            break;
+                        case 3:
+                            Console.WriteLine("Goodbye.");
+                            break;
+                    }
+                }
+                catch { }
+            }
         }
         
         public MazeGraph GenerateMaze() // asks the player to specify the width/height of the maze and algorithm used, then generates it
@@ -76,8 +101,7 @@
                 "1. Randomized depth-first search (default)" + "\n" +
                 "2. Wilson's algorithm" + "\n" +
                 "3. Iterative randomized Prim's algorithm" + "\n" +
-                "4. Iterative randomized Kruskal's algorithm" + "\n" +
-                "5. Choose a random algorithm from the list above");
+                "4. Choose a random algorithm from the list above");
            
             Console.Write("Enter a number to choose which algorithm to use, or anything else for the default: ");
             try
@@ -88,13 +112,13 @@
             {
                 algo = 1;
             }
-            if (algo < 0 || algo > 5)
+            if (algo < 0 || algo > 4)
             {
                 algo = 1;
             }
-            if (algo == 5)
+            if (algo == 4)
             {
-                algo = new Random().Next(1, 5);
+                algo = new Random().Next(1, 4);
             }
 
             Console.WriteLine("Generating maze (this might take a while if you entered big numbers)...");
@@ -106,8 +130,6 @@
                     return g.WilsonsAlgorithm(width, height);
                 case 3:
                     return g.IterativeRandomizedPrimsAlgorithm(width, height);
-                case 4:
-                    throw new NotImplementedException("If you are reading this, I'm still lazy.");
                 default:
                     throw new Exception("If you are reading this, I messed up somehow.");
             }
@@ -123,7 +145,10 @@
                 {
                     Console.Write(display[i, j]); Console.Write(display[i, j]);
                 }
-                Console.WriteLine();
+                if (j != display.GetLength(1) - 1)
+                {
+                    Console.WriteLine();
+                }
             }
             // place player
             Console.SetCursorPosition(2, 2 * maze.GetHeight() - 1);
@@ -134,11 +159,11 @@
             Coordinate player = new Coordinate(0, maze.GetHeight() - 1);
             Coordinate nextPosition = new Coordinate(-1, -1);
             ConsoleKey input;
-            bool mazeCompleted = false;
+            bool gameOver = false;
 
             DateTime startTime = DateTime.Now;
             
-            while (!mazeCompleted)
+            while (!gameOver)
             {
                 // get and handle player input
                 input = Console.ReadKey(true).Key;
@@ -165,7 +190,7 @@
                     case ConsoleKey.RightArrow or ConsoleKey.D:
                         if (player.x == maze.GetWidth() - 1 && player.y == 0)
                         {
-                            mazeCompleted = true;
+                            gameOver = true;
                             break;
                         }
                         if (player.x < maze.GetWidth() - 1)
@@ -174,7 +199,7 @@
                         }
                         break;
                 }
-                if (mazeCompleted)
+                if (gameOver)
                 {
                     break;
                 }
@@ -191,12 +216,13 @@
             DateTime endTime = DateTime.Now;
             TimeSpan timeTaken = endTime - startTime;
             int timeMinutes = (int)Math.Floor(timeTaken.TotalMinutes);
-            double timeSeconds = (Math.Floor(timeTaken.TotalMilliseconds) / 1000) % 60;
+            double timeSeconds = (Math.Truncate(timeTaken.TotalMilliseconds) / 1000) % 60;
             int score = (int)Math.Floor(10 * maze.GetWidth() * maze.GetHeight() / timeTaken.TotalSeconds);
 
             Console.Clear();
+            Console.SetWindowSize(120, 30);
             Console.WriteLine($"Congratulations! You cleared a {maze.GetWidth()}x{maze.GetHeight()} maze in {timeMinutes} minute(s) and {timeSeconds} seconds.");
-            Console.WriteLine($"Based on the width, height and time taken, you earned a score of {score}.");
+            Console.WriteLine($"Score: {score} (based on size and time taken)");
             Thread.Sleep(1000);
         }
     }
