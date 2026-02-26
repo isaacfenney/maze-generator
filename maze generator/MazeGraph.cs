@@ -6,6 +6,7 @@
         // attributes
         private int width;
         private int height;
+        private int algorithmUsed;
         private bool[,] cells;
         private bool[,] horizontalEdges;
         private bool[,] verticalEdges;
@@ -20,9 +21,20 @@
             verticalEdges = new bool[width, height - 1];
         }
 
+        public MazeGraph(int width, int height, int algorithmUsed)
+        {
+            this.width = width;
+            this.height = height;
+            this.algorithmUsed = algorithmUsed;
+            cells = new bool[width, height];
+            horizontalEdges = new bool[width - 1, height];
+            verticalEdges = new bool[width, height - 1];
+        }
+
         // accessors
         public int GetWidth() { return width; }
         public int GetHeight() { return height; }
+        public int GetAlgorithmUsed() { return algorithmUsed; }
         public bool CellVisited(Coordinate c)
         {
             if (cells[c.x, c.y])

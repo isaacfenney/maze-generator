@@ -36,6 +36,6 @@
         public int GetAlgorithm() { return algorithm; }
         public int GetScore() { return score; }
         public TimeSpan GetTime() { return time; }
-        public bool IsSolved() { return solved; }
+        public bool WasSolved() { return solved; }
     }
 }

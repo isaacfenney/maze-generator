@@ -13,10 +13,25 @@
 
         // maze generation algorithms
 
+        public MazeGraph GenerateMaze(int width, int height, int algorithm)
+        {
+            switch (algorithm)
+            {
+                case 1:
+                    return RandomizedDepthFirstSearch(width, height);
+                case 2:
+                    return WilsonsAlgorithm(width, height);
+                case 3:
+                    return IterativeRandomizedPrimsAlgorithm(width, height);
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
         // biased towards mazes with long winding corridors
         public MazeGraph RandomizedDepthFirstSearch(int width, int height)
         {
-            MazeGraph maze = new MazeGraph(width, height);
+            MazeGraph maze = new MazeGraph(width, height, 0);
             List<Coordinate> potentialNextCells = new List<Coordinate>();
             Stack<Coordinate> path = new Stack<Coordinate>();
             Coordinate current;
@@ -81,7 +96,7 @@
         // equally likely to generate any maze of the given width/height (NB: may take a while if you're unlucky)
         public MazeGraph WilsonsAlgorithm(int width, int height)
         {
-            MazeGraph maze = new MazeGraph(width, height);
+            MazeGraph maze = new MazeGraph(width, height, 1);
             List<Coordinate> RandomWalk = new List<Coordinate>();
 
             // choose a random cell and add it to the maze
@@ -179,10 +194,11 @@
         // biased towards mazes with lots of short dead ends
         public MazeGraph IterativeRandomizedPrimsAlgorithm(int width, int height)
         {
-            MazeGraph maze = new MazeGraph(width, height);
+            MazeGraph maze = new MazeGraph(width, height, 2);
             // edges are stored as an array of 3 integers
             // the first integer is either 0 (indicating a horizontal edge) or 1 (vertical) and the second and third integers indicate the edge's position in the array of horizontal/vertical edges
             List<int[]> adjacentEdges = new List<int[]>();
+            // choose a random cell to start at and add it to the maze
             Coordinate current = new Coordinate(r.Next(0, width), r.Next(0, height));
             Coordinate next;
             maze.AddCell(current);

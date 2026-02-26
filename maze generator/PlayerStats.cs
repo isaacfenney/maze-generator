@@ -27,6 +27,7 @@
             highScore = 0;
             averageScore = 0;
             total50x50Solved = 0;
+            total50x50Time = TimeSpan.Zero;
             best50x50Time = new TimeSpan(1, 0, 0);
             average50x50Time = new TimeSpan(1, 0, 0);
             recentMazes = new List<MazeStats>();
@@ -40,15 +41,16 @@
         public int GetTotalPoints() { return totalPoints; }
         public int GetHighScore() { return highScore; }
         public double GetAverageScore() { return averageScore; }
-        public TimeSpan GetBest5050Time() { return best50x50Time; }
-        public TimeSpan GetAverage5050Time() { return average50x50Time; }
+        public int GetTotal50x50Solved() { return total50x50Solved; }
+        public TimeSpan GetBest50x50Time() { return best50x50Time; }
+        public TimeSpan GetAverage50x50Time() { return average50x50Time; }
         public List<MazeStats> GetRecentMazes() { return recentMazes; }
 
         // mutators
         public void UpdateStats(MazeStats m)
         {
             int score = m.GetScore();
-            bool solved = m.IsSolved();
+            bool solved = m.WasSolved();
             TimeSpan time = m.GetTime();
             totalAttempted++;
             if (solved) 
@@ -67,7 +69,7 @@
             if (m.GetWidth() == 50 && m.GetHeight() == 50 && solved)
             {
                 total50x50Solved++;
-                total50x50Time += m.GetTime();
+                total50x50Time += time;
                 if (time < best50x50Time)
                 {
                     best50x50Time = time;

@@ -1,20 +1,25 @@
-﻿namespace maze_generator
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace maze_generator
 {
+    // Main class, is where the game is played
     class Game
     {
         private MazeGenerator g;
-        private PlayerStats p = new PlayerStats();
+        private PlayerStats p;
 
         public Game()
         {
             g = new MazeGenerator();
+            p = new PlayerStats();
         }
 
-        public void PlayGame()
+        public void PlayGame() // main loop
         {
             Console.WriteLine("Welcome to my maze game.");
-            Console.WriteLine("Use WASD or the arrow keys to move.");
             Console.WriteLine("You will start in the bottom left corner of the maze and attempt to reach the top right corner.");
+            Console.WriteLine("Use WASD or the arrow keys to move.");
+            Console.WriteLine("You can press X to give up");
             Console.WriteLine();
             int menuChoice = -1;
             while (menuChoice != 3)
@@ -34,7 +39,7 @@
                             PlayMaze(maze);
                             break;
                         case 2:
-                            Console.WriteLine("Not implemented yet");
+                            ShowStatistics();
                             break;
                         case 3:
                             Console.WriteLine("Goodbye.");
@@ -122,17 +127,10 @@
             }
 
             Console.WriteLine("Generating maze (this might take a while if you entered big numbers)...");
-            switch (algo)
-            {
-                case 1:
-                    return g.RandomizedDepthFirstSearch(width, height);
-                case 2:
-                    return g.WilsonsAlgorithm(width, height);
-                case 3:
-                    return g.IterativeRandomizedPrimsAlgorithm(width, height);
-                default:
-                    throw new Exception("If you are reading this, I messed up somehow.");
-            }
+            MazeGraph maze = g.GenerateMaze(width, height, algo);
+            Console.WriteLine("Done! Press any key when you are ready to begin. (Your time taken will be saved.)");
+            Console.ReadKey(false);
+            return maze;
         }
         public void DisplayMaze(MazeGraph maze)
         {
@@ -154,12 +152,13 @@
             Console.SetCursorPosition(2, 2 * maze.GetHeight() - 1);
             Console.Write("<3");
         }
-        public void PlayMaze(MazeGraph maze)
+        public void PlayMaze(MazeGraph maze) // handles player inputs, moves player, gives score at the end
         {
             Coordinate player = new Coordinate(0, maze.GetHeight() - 1);
             Coordinate nextPosition = new Coordinate(-1, -1);
             ConsoleKey input;
             bool gameOver = false;
+            bool playerGaveUp = false;
 
             DateTime startTime = DateTime.Now;
             
@@ -198,6 +197,12 @@
                             nextPosition = new Coordinate(player.x + 1, player.y);
                         }
                         break;
+                    case ConsoleKey.X:
+                        gameOver = true;
+                        playerGaveUp = true;
+                        break;
+                    default:
+                        break;
                 }
                 if (gameOver)
                 {
@@ -213,17 +218,46 @@
                     Console.Write("<3");
                 }
             }
+
+            Console.Clear();
+            Console.SetWindowSize(120, 30);
+
+            int score;
             DateTime endTime = DateTime.Now;
             TimeSpan timeTaken = endTime - startTime;
             int timeMinutes = (int)Math.Floor(timeTaken.TotalMinutes);
             double timeSeconds = (Math.Truncate(timeTaken.TotalMilliseconds) / 1000) % 60;
-            int score = (int)Math.Floor(10 * maze.GetWidth() * maze.GetHeight() / timeTaken.TotalSeconds);
-
-            Console.Clear();
-            Console.SetWindowSize(120, 30);
-            Console.WriteLine($"Congratulations! You cleared a {maze.GetWidth()}x{maze.GetHeight()} maze in {timeMinutes} minute(s) and {timeSeconds} seconds.");
-            Console.WriteLine($"Score: {score} (based on size and time taken)");
+            if (!playerGaveUp)
+            {           
+                score = (int)Math.Floor(10 * maze.GetWidth() * maze.GetHeight() / timeTaken.TotalSeconds);
+                Console.WriteLine($"Congratulations! You cleared a {maze.GetWidth()}x{maze.GetHeight()} maze in {timeMinutes} minute(s) and {timeSeconds} seconds.");
+                Console.WriteLine($"Score: {score} (based on size and time taken)");
+            }
+            else
+            {
+                score = 0;
+                Console.WriteLine($"Did not finish (time spent: {timeMinutes} minute(s) {timeSeconds} seconds)");
+                Console.WriteLine("Score: 0 (you must complete the maze to get a score above 0)");
+            }
+            MazeStats mazeStats = new MazeStats(maze.GetWidth(), maze.GetHeight(), maze.GetAlgorithmUsed(), !playerGaveUp, timeTaken, score);
+            p.UpdateStats(mazeStats);
             Thread.Sleep(1000);
+        }
+        public void ShowStatistics()
+        {
+            TimeSpan totalTime = p.GetTimePlayed();
+            int totalHours = (int)Math.Floor(totalTime.TotalHours);
+            int totalMinutes = (int)Math.Floor(totalTime.TotalMinutes % 60);
+            int totalSeconds = (int)Math.Floor(totalTime.TotalSeconds % 60);
+            Console.WriteLine($"Time played: {totalHours} hours {totalMinutes} minutes {totalSeconds} seconds");
+            Console.WriteLine($"Mazes attempted: {p.GetTotalAttempted()}");
+            Console.WriteLine($"Mazes solved: {p.GetTotalSolved()}");
+            Console.WriteLine($"Win rate: {Math.Truncate(p.GetWinRate() * 10000) / 100}%\n");
+
+            Console.WriteLine($"High score: {p.GetHighScore()}");
+            Console.WriteLine($"Average score: {p.GetAverageScore()}\n");
+            
+            
         }
     }
 }
